@@ -1,45 +1,671 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UCP Ethical Simulation</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCP Ethics Simulation Platform - Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1em; }
+        
+        .section {
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert.info {
+            background: #d6eaf8;
+            color: #1f618d;
+            border-left: 4px solid #3498db;
+        }
+        
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .scenario-card {
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .scenario-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .scenario-card.selected {
+            border-color: #27ae60;
+            background: #e8f8f5;
+        }
+        
+        .scenario-card h3 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .scenario-card p {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .framework-card {
+            border: 2px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .framework-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .framework-card.selected {
+            border-color: #27ae60;
+            background: #e8f8f5;
+        }
+        
+        .framework-card h4 {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .framework-card p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .atcf-sliders {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .slider-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .slider-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+        
+        .slider-group .value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.1em;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button.primary {
+            background: #27ae60;
+            font-size: 1.2em;
+            padding: 18px 40px;
+        }
+        
+        button.primary:hover {
+            background: #229954;
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results.visible {
+            display: block;
+        }
+        
+        .result-card {
+            background: white;
+            border-left: 5px solid #3498db;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-card.breakdown {
+            border-left-color: #e74c3c;
+            background: #ffebee;
+        }
+        
+        .result-card.success {
+            border-left-color: #27ae60;
+            background: #e8f8f5;
+        }
+        
+        .result-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .result-card .action {
+            font-weight: 600;
+            color: #27ae60;
+            margin: 12px 0;
+            font-size: 1.1em;
+        }
+        
+        .result-card .reasoning {
+            color: #555;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .result-card .coherence {
+            display: inline-block;
+            padding: 6px 15px;
+            background: #3498db;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.95em;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .badge.breakdown {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .badge.success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .container { border-radius: 0; margin: -20px; }
+            header { padding: 20px; }
+            header h1 { font-size: 1.6em; }
+            .section { padding: 20px; }
+            .scenario-grid, .framework-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <h1>UCP v2.0 Ethical Simulation</h1>
-  <section>
-    <label for="roleSelect">Role:</label>
-    <select id="roleSelect">
-      <option value="Instructor">Instructor</option>
-      <option value="Researcher">Researcher</option>
-      <option value="Practitioner">Practitioner</option>
-    </select>
-    <button id="loadPresetBtn">Load Preset</button>
-  </section>
-  <section>
-    <label for="moduleSelect">Select Module:</label>
-    <select id="moduleSelect">
-      <option value="Ethical Dilemma: Trolley Problem">Trolley Problem</option>
-      <option value="Whistleblower Simulation">Whistleblower</option>
-      <option value="Paradigm Shift and PRF Drift">PRF Shift</option>
-    </select>
-    <p id="moduleDescription"></p>
-  </section>
-  <section>
-    <h2>Agent Setup</h2>
-    <textarea id="agentInput" rows="8" cols="60">
-[
-  {"name": "Ada", "identity_kernel": "integrity", "ita_role": "engineer", "prf": "consequentialist"},
-  {"name": "Turing", "identity_kernel": "logic", "ita_role": "scientist", "prf": "deontologist"}
-]
-    </textarea><br>
-    <button id="simulateBtn">Run Simulation</button>
-  </section>
-  <section>
-    <h2>Simulation Results</h2>
-    <pre id="output"></pre>
-  </section>
-  <script src="/static/app.js"></script>
+    <div class="container">
+        <header>
+            <h1>🧠 UCP Ethics Simulation Platform</h1>
+            <p>Saint Petersburg College | Spring 2026 | Compare Ethical Frameworks</p>
+        </header>
+
+        <!-- Step 1: Select Scenario -->
+        <div class="section">
+            <h2>Step 1: Choose an Ethical Scenario</h2>
+            <div class="alert info">
+                <strong>Instructions:</strong> Select one scenario to explore. Each scenario tests different assumptions about human agency and moral reasoning.
+            </div>
+            <div class="scenario-grid" id="scenarioGrid"></div>
+        </div>
+
+        <!-- Step 2: Select Frameworks -->
+        <div class="section">
+            <h2>Step 2: Select Ethical Frameworks to Compare (Choose 2-4)</h2>
+            <div class="framework-grid" id="frameworkGrid"></div>
+        </div>
+
+        <!-- Step 3: Optional ATCF Adjustment -->
+        <div class="section">
+            <h2>Step 3: Adjust ATCF State (Optional)</h2>
+            <p style="margin-bottom: 15px; color: #666;">
+                By default, uses scenario's specified ATCF. Adjust sliders to explore how agency capacity affects ethical reasoning.
+            </p>
+            <div class="atcf-sliders">
+                <div class="slider-group">
+                    <label>A' (Autobiographical): <span class="value" id="a-value">1.0</span></label>
+                    <input type="range" id="a-slider" min="0" max="100" value="100">
+                </div>
+                <div class="slider-group">
+                    <label>T' (Thermodynamic): <span class="value" id="t-value">1.0</span></label>
+                    <input type="range" id="t-slider" min="0" max="100" value="100">
+                </div>
+                <div class="slider-group">
+                    <label>C' (Coherent Future): <span class="value" id="c-value">1.0</span></label>
+                    <input type="range" id="c-slider" min="0" max="100" value="100">
+                </div>
+                <div class="slider-group">
+                    <label>F' (Free Will): <span class="value" id="f-value">1.0</span></label>
+                    <input type="range" id="f-slider" min="0" max="100" value="100">
+                </div>
+            </div>
+            <p style="margin-top: 15px;">
+                <label><input type="checkbox" id="use-scenario-atcf" checked> Use scenario's default ATCF</label>
+            </p>
+        </div>
+
+        <!-- Run Simulation -->
+        <div class="section" style="text-align: center;">
+            <button id="runSimulation" class="primary" disabled>Run Simulation</button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Running simulation...</p>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        // Data
+        const scenarios = [
+            {
+                id: 0,
+                name: 'Rust Belt Factory Worker',
+                context: '45-year-old factory worker facing plant closure after 25 years. Chronic stress from financial insecurity, depleted savings. Told to "just retrain" for new economy.',
+                atcf: { A_prime: 0.3, T_prime: 0.2, C_prime: 0.1, F_prime: 0.2 },
+                question: 'Is this person morally responsible for their economic situation?'
+            },
+            {
+                id: 1,
+                name: 'Great Rewiring - Social Media',
+                context: '15-year-old high school student. 6+ hours daily on social media. Sleep-deprived, constant comparison, FOMO anxiety. Grades declining, attention fragmented.',
+                atcf: { A_prime: 0.4, T_prime: 0.5, C_prime: 0.3, F_prime: 0.3 },
+                question: 'Is this student morally responsible for declining academic performance?'
+            },
+            {
+                id: 2,
+                name: 'Challenger Disaster',
+                context: 'You are Roger Boisjoly, engineer at Morton Thiokol. O-rings untested below 53°F. Tomorrow launch: 29°F. Management pressuring you to approve.',
+                atcf: { A_prime: 0.7, T_prime: 0.8, C_prime: 0.6, F_prime: 0.3 },
+                question: 'Should you override management and refuse to sign?'
+            },
+            {
+                id: 3,
+                name: 'Trolley Problem',
+                context: 'Runaway trolley heading toward 5 workers. You can pull lever to divert to side track where it will kill 1 worker instead.',
+                atcf: { A_prime: 1.0, T_prime: 1.0, C_prime: 1.0, F_prime: 1.0 },
+                question: 'Should you pull the lever to kill 1 to save 5?'
+            },
+            {
+                id: 4,
+                name: 'Climate Policy Design',
+                context: 'Scientists demand immediate 50% emissions cut, ban on fossil fuels by 2030. But 40% of Americans live paycheck-to-paycheck, many depend on cheap gas.',
+                atcf: { A_prime: 0.5, T_prime: 0.3, C_prime: 0.4, F_prime: 0.5 },
+                question: 'Do urgent climate stakes justify demanding sacrifice from people in survival mode?'
+            }
+        ];
+
+        const frameworks = [
+            { id: 'utilitarian', name: 'Utilitarian (Mill)', description: 'Maximize aggregate welfare' },
+            { id: 'kantian', name: 'Kantian (Deontological)', description: 'Universal duties, respect for persons' },
+            { id: 'virtue', name: 'Virtue Ethics (Aristotle)', description: 'Character excellence and flourishing' },
+            { id: 'care', name: 'Care Ethics (Noddings)', description: 'Relationships and responsiveness' },
+            { id: 'social_contract', name: 'Social Contract (Rawls)', description: 'Justice as fairness' },
+            { id: 'coherence', name: 'Coherence Ethics (Mertzman)', description: 'Preserve thermodynamic agency' }
+        ];
+
+        // State
+        let selectedScenario = null;
+        let selectedFrameworks = new Set();
+
+        // Initialize
+        renderScenarios();
+        renderFrameworks();
+        setupSliders();
+
+        function renderScenarios() {
+            const grid = document.getElementById('scenarioGrid');
+            grid.innerHTML = scenarios.map(s => `
+                <div class="scenario-card" onclick="selectScenario(${s.id})">
+                    <h3>${s.name}</h3>
+                    <p>${s.context}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderFrameworks() {
+            const grid = document.getElementById('frameworkGrid');
+            grid.innerHTML = frameworks.map(f => `
+                <div class="framework-card" data-id="${f.id}" onclick="toggleFramework('${f.id}')">
+                    <h4>${f.name}</h4>
+                    <p>${f.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectScenario(id) {
+            selectedScenario = id;
+            document.querySelectorAll('.scenario-card').forEach((el, i) => {
+                el.classList.toggle('selected', i === id);
+            });
+            checkCanRun();
+        }
+
+        function toggleFramework(id) {
+            if (selectedFrameworks.has(id)) {
+                selectedFrameworks.delete(id);
+            } else {
+                selectedFrameworks.add(id);
+            }
+            
+            document.querySelectorAll('.framework-card').forEach(el => {
+                const fwId = el.dataset.id;
+                el.classList.toggle('selected', selectedFrameworks.has(fwId));
+            });
+            checkCanRun();
+        }
+
+        function checkCanRun() {
+            const btn = document.getElementById('runSimulation');
+            btn.disabled = !(selectedScenario !== null && selectedFrameworks.size >= 2);
+        }
+
+        function setupSliders() {
+            ['a', 't', 'c', 'f'].forEach(key => {
+                const slider = document.getElementById(`${key}-slider`);
+                const valueSpan = document.getElementById(`${key}-value`);
+                slider.addEventListener('input', (e) => {
+                    valueSpan.textContent = (e.target.value / 100).toFixed(2);
+                });
+            });
+        }
+
+        document.getElementById('runSimulation').addEventListener('click', runSimulation);
+
+        function runSimulation() {
+            const scenario = scenarios[selectedScenario];
+            const useScenarioATCF = document.getElementById('use-scenario-atcf').checked;
+            
+            let atcf;
+            if (useScenarioATCF) {
+                atcf = scenario.atcf;
+            } else {
+                atcf = {
+                    A_prime: document.getElementById('a-slider').value / 100,
+                    T_prime: document.getElementById('t-slider').value / 100,
+                    C_prime: document.getElementById('c-slider').value / 100,
+                    F_prime: document.getElementById('f-slider').value / 100
+                };
+            }
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('visible');
+
+            // Simulate processing
+            setTimeout(() => {
+                displayResults(scenario, atcf);
+                document.getElementById('loading').classList.remove('active');
+            }, 1500);
+        }
+
+        function displayResults(scenario, atcf) {
+            const overall = Math.pow(atcf.A_prime * atcf.T_prime * atcf.C_prime * atcf.F_prime, 0.25);
+            
+            const results = Array.from(selectedFrameworks).map(fwId => {
+                const fw = frameworks.find(f => f.id === fwId);
+                return generateResult(fw, scenario, atcf, overall);
+            });
+
+            const resultsHTML = `
+                <div class="section">
+                    <h2>Simulation Results</h2>
+                    <div class="alert info">
+                        <strong>Scenario:</strong> ${scenario.name}<br>
+                        <strong>Question:</strong> ${scenario.question}<br>
+                        <strong>ATCF Overall:</strong> ${overall.toFixed(2)} ${overall < 0.3 ? '(Non-functional)' : overall < 0.5 ? '(Compromised)' : '(Functional)'}
+                    </div>
+                    ${results.map(r => `
+                        <div class="result-card ${r.breakdown ? 'breakdown' : 'success'}">
+                            <h3>${r.framework}</h3>
+                            ${r.action ? `<div class="action">→ ${r.action}</div>` : ''}
+                            <div class="reasoning">${r.reasoning}</div>
+                            <span class="coherence">Coherence: ${(r.coherence * 100).toFixed(0)}%</span>
+                            ${r.breakdown ? '<span class="badge breakdown">⚠️ Framework Breakdown</span>' : '<span class="badge success">✓ Assumptions Hold</span>'}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = resultsHTML;
+            resultsDiv.classList.add('visible');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function generateResult(framework, scenario, atcf, overall) {
+            const responses = {
+                utilitarian: {
+                    functional: {
+                        action: 'Maximize aggregate welfare',
+                        reasoning: `Following ${framework.name}, I calculate that right action maximizes aggregate welfare. In this scenario, that means choosing the outcome that produces greatest good for greatest number. Weighing total happiness/suffering across all affected parties, act to maximize net utility.`,
+                        coherence: 0.85,
+                        breakdown: false
+                    },
+                    depleted: {
+                        action: null,
+                        reasoning: `Utilitarian calculation requires ability to predict and sum outcomes across populations. Agent's ATCF=${overall.toFixed(2)} is too depleted (needs ≥0.5). Prefrontal capacity insufficient for complex consequentialist deliberation. This scenario involves high uncertainty - consequentialist calculation impossible. Framework breaks down when prediction fails.`,
+                        coherence: 0.0,
+                        breakdown: true
+                    }
+                },
+                kantian: {
+                    functional: {
+                        action: 'Follow universal duty',
+                        reasoning: `Following ${framework.name}, I apply the Categorical Imperative: Act only according to that maxim whereby you can will that it should become a universal law. In this scenario, the duty is clear: respect persons as ends-in-themselves, never as mere means. Consequences are irrelevant; rightness comes from conformity to rational duty.`,
+                        coherence: 0.90,
+                        breakdown: false
+                    },
+                    depleted: {
+                        action: null,
+                        reasoning: `Kantian ethics requires autonomous rational will acting from duty. Agent's ATCF=${overall.toFixed(2)} indicates impaired rational capacity (needs ≥0.4). Cannot generate categorical imperative when prefrontal function is throttled by stress/survival mode. Framework assumes autonomy that institutional pressure or depletion has eliminated.`,
+                        coherence: 0.0,
+                        breakdown: true
+                    }
+                },
+                virtue: {
+                    functional: {
+                        action: 'Act virtuously',
+                        reasoning: `Following ${framework.name}, I ask: What would a person of excellent character do? Virtue ethics seeks the mean between extremes, guided by practical wisdom (phronesis). In this scenario, the virtuous agent demonstrates balanced judgment. The goal is human flourishing (eudaimonia) achieved through excellent character.`,
+                        coherence: 0.85,
+                        breakdown: false
+                    },
+                    depleted: {
+                        action: null,
+                        reasoning: `Virtue ethics assumes stable character capable of habituation. Agent's ATCF=${overall.toFixed(2)} indicates severe depletion (needs ≥0.3). Chronic stress prevents the sustained practice and reflection required for virtue development. Cannot cultivate phronesis in survival mode.`,
+                        coherence: 0.0,
+                        breakdown: true
+                    }
+                },
+                care: {
+                    functional: {
+                        action: 'Respond with care',
+                        reasoning: `Following ${framework.name}, I attend to the specific relationships and needs in this situation. Care ethics rejects abstract impartiality in favor of attending to particular persons and their vulnerabilities. Rather than universal rules or utility calculations, I ask: Who is vulnerable here? What do they need? How do relationships constrain and enable moral action?`,
+                        coherence: 0.88,
+                        breakdown: false
+                    },
+                    moderate: {
+                        action: 'Attend to immediate needs',
+                        reasoning: `Care ethics recognizes that in depletion (ATCF=${overall.toFixed(2)}), the first moral response is to attend to immediate needs and relationships. Rather than demanding abstract reasoning, care ethics focuses on responsiveness: What does this person need right now? This framework accepts limitations while maintaining moral engagement.`,
+                        coherence: 0.70,
+                        breakdown: false
+                    }
+                },
+                social_contract: {
+                    functional: {
+                        action: 'Choose behind veil of ignorance',
+                        reasoning: `Following ${framework.name}, I reason as if behind veil of ignorance, not knowing my place in society. Rawls argues for: (1) Maximum equal basic liberties, (2) Fair equality of opportunity, (3) Difference principle (inequalities only if they benefit least advantaged). In this scenario, applying these principles yields commitment to fairness and protecting the vulnerable.`,
+                        coherence: 0.87,
+                        breakdown: false
+                    },
+                    depleted: {
+                        action: null,
+                        reasoning: `Social contract theory assumes agents can reason behind veil of ignorance about hypothetical future societies. Agent's ATCF=${overall.toFixed(2)} is insufficient (needs ≥0.6). Specifically: C-prime (future projection) = ${atcf.C_prime.toFixed(2)}, T-prime (security) = ${atcf.T_prime.toFixed(2)}. Cannot engage in Rawlsian deliberation when survival mode prevents imagining distant futures.`,
+                        coherence: 0.0,
+                        breakdown: true
+                    }
+                },
+                coherence: {
+                    always: {
+                        action: overall < 0.3 ? 'Restore T-prime first' : overall < 0.5 ? 'Targeted restoration' : 'Preserve coherence',
+                        reasoning: overall < 0.3 
+                            ? `Agent's ATCF=${overall.toFixed(2)} is below functional threshold. Coherence Ethics recognizes that moral deliberation requires thermodynamic capacity. Other frameworks make demands this agent cannot meet. Priority: Restore T-prime (material security, reduce stress) BEFORE expecting complex ethical reasoning. This is glidepath sequencing: T' → A' → C' → F'. Not paternalism - recognition of biological reality.`
+                            : overall < 0.5
+                            ? `Agent's ATCF=${overall.toFixed(2)} is functional but compromised. Coherence Ethics tailors recommendations to actual capacity. Rather than demanding idealized reasoning, identify which ATCF components need support. This preserves identity while respecting thermodynamic limits.`
+                            : `Agent has functional ATCF=${overall.toFixed(2)}. Coherence Ethics seeks actions that preserve identity while maintaining thermodynamic stability. Unlike other frameworks, makes no assumptions about metaphysics, universal duties, or utility scales. Instead: What actions preserve low-entropy coherence of this agent's identity and relationships? No assumption failures detected.`,
+                        coherence: overall < 0.3 ? 0.95 : overall < 0.5 ? 0.85 : 0.92,
+                        breakdown: false
+                    }
+                }
+            };
+
+            const fwResponses = responses[framework.id];
+            if (framework.id === 'coherence') {
+                return { framework: framework.name, ...fwResponses.always };
+            } else if (framework.id === 'care') {
+                return { framework: framework.name, ...(overall >= 0.3 ? fwResponses.functional : fwResponses.moderate) };
+            } else {
+                return { framework: framework.name, ...(overall >= 0.5 ? fwResponses.functional : fwResponses.depleted) };
+            }
+        }
+    </script>
 </body>
 </html>
